@@ -79,11 +79,10 @@ export default function Instalaciones() {
 
     setFacilities(filtered)
   }
-
-  // Actualizar los resultados cuando cambia la pestaña
+  // Actualizar los resultados cuando cambia la pestaña o los filtros
   useEffect(() => {
     filterFacilities()
-  }, [activeTab, allFacilities]) // Añadimos allFacilities como dependencia para reaccionar a la carga inicial
+  }, [activeTab, searchQuery, allFacilities]) // Incluimos todas las dependencias relevantes
 
   // Manejar la búsqueda
   const handleSearch = (e: React.FormEvent) => {
@@ -177,23 +176,241 @@ export default function Instalaciones() {
                   <p className="text-gray-500">No se encontraron instalaciones con los criterios especificados.</p>
                 </div>
               )}
-            </TabsContent>
-
-            {/* Las demás pestañas usan el mismo contenido */}
+            </TabsContent>            {/* Las demás pestañas con el mismo contenido pero filtrado */}
             <TabsContent value="piscina" className="mt-0">
-              {/* Se muestra el mismo contenido que en "todos", el filtro ya se aplicó */}
+              {isLoading ? (
+                <div className="flex justify-center items-center h-64">
+                  <Loader2 className="h-12 w-12 animate-spin text-primary" />
+                </div>
+              ) : error ? (
+                <div className="text-center p-8 bg-red-50 rounded-lg text-red-500">
+                  <p>{error}</p>
+                  <Button 
+                    onClick={() => window.location.reload()} 
+                    variant="outline" 
+                    className="mt-4"
+                  >
+                    Reintentar
+                  </Button>
+                </div>
+              ) : facilities.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {facilities.map((facility) => (
+                    <Card key={facility.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+                      <img
+                        src={facility.imagenUrl || "/placeholder.svg?height=200&width=300"}
+                        alt={facility.nombre}
+                        className="w-full h-48 object-cover"
+                      />
+                      <CardContent className="p-4">
+                        <h3 className="font-bold text-lg mb-2">{facility.nombre}</h3>
+                        <p className="text-gray-600 text-sm mb-2">{facility.descripcion}</p>
+                        <p className="text-gray-700 text-sm mb-1">
+                          <strong>Ubicación:</strong> {facility.ubicacion}
+                        </p>
+                        <p className="text-gray-700 text-sm mb-4">
+                          <strong>Precio:</strong> {formatPrice(facility.precio, facility.tipo)}
+                        </p>
+                        <Button asChild className="w-full bg-primary hover:bg-primary-light">
+                          <Link href={`/instalaciones/${facility.id}`}>Ver Disponibilidad</Link>
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center p-8 bg-gray-50 rounded-lg">
+                  <p className="text-gray-500">No se encontraron instalaciones con los criterios especificados.</p>
+                </div>
+              )}
             </TabsContent>
             <TabsContent value="cancha" className="mt-0">
-              {/* Se muestra el mismo contenido que en "todos", el filtro ya se aplicó */}
+              {isLoading ? (
+                <div className="flex justify-center items-center h-64">
+                  <Loader2 className="h-12 w-12 animate-spin text-primary" />
+                </div>
+              ) : error ? (
+                <div className="text-center p-8 bg-red-50 rounded-lg text-red-500">
+                  <p>{error}</p>
+                  <Button 
+                    onClick={() => window.location.reload()} 
+                    variant="outline" 
+                    className="mt-4"
+                  >
+                    Reintentar
+                  </Button>
+                </div>
+              ) : facilities.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {facilities.map((facility) => (
+                    <Card key={facility.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+                      <img
+                        src={facility.imagenUrl || "/placeholder.svg?height=200&width=300"}
+                        alt={facility.nombre}
+                        className="w-full h-48 object-cover"
+                      />
+                      <CardContent className="p-4">
+                        <h3 className="font-bold text-lg mb-2">{facility.nombre}</h3>
+                        <p className="text-gray-600 text-sm mb-2">{facility.descripcion}</p>
+                        <p className="text-gray-700 text-sm mb-1">
+                          <strong>Ubicación:</strong> {facility.ubicacion}
+                        </p>
+                        <p className="text-gray-700 text-sm mb-4">
+                          <strong>Precio:</strong> {formatPrice(facility.precio, facility.tipo)}
+                        </p>
+                        <Button asChild className="w-full bg-primary hover:bg-primary-light">
+                          <Link href={`/instalaciones/${facility.id}`}>Ver Disponibilidad</Link>
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center p-8 bg-gray-50 rounded-lg">
+                  <p className="text-gray-500">No se encontraron instalaciones con los criterios especificados.</p>
+                </div>
+              )}
             </TabsContent>
             <TabsContent value="gimnasio" className="mt-0">
-              {/* Se muestra el mismo contenido que en "todos", el filtro ya se aplicó */}
+              {isLoading ? (
+                <div className="flex justify-center items-center h-64">
+                  <Loader2 className="h-12 w-12 animate-spin text-primary" />
+                </div>
+              ) : error ? (
+                <div className="text-center p-8 bg-red-50 rounded-lg text-red-500">
+                  <p>{error}</p>
+                  <Button 
+                    onClick={() => window.location.reload()} 
+                    variant="outline" 
+                    className="mt-4"
+                  >
+                    Reintentar
+                  </Button>
+                </div>
+              ) : facilities.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {facilities.map((facility) => (
+                    <Card key={facility.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+                      <img
+                        src={facility.imagenUrl || "/placeholder.svg?height=200&width=300"}
+                        alt={facility.nombre}
+                        className="w-full h-48 object-cover"
+                      />
+                      <CardContent className="p-4">
+                        <h3 className="font-bold text-lg mb-2">{facility.nombre}</h3>
+                        <p className="text-gray-600 text-sm mb-2">{facility.descripcion}</p>
+                        <p className="text-gray-700 text-sm mb-1">
+                          <strong>Ubicación:</strong> {facility.ubicacion}
+                        </p>
+                        <p className="text-gray-700 text-sm mb-4">
+                          <strong>Precio:</strong> {formatPrice(facility.precio, facility.tipo)}
+                        </p>
+                        <Button asChild className="w-full bg-primary hover:bg-primary-light">
+                          <Link href={`/instalaciones/${facility.id}`}>Ver Disponibilidad</Link>
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center p-8 bg-gray-50 rounded-lg">
+                  <p className="text-gray-500">No se encontraron instalaciones con los criterios especificados.</p>
+                </div>
+              )}
             </TabsContent>
             <TabsContent value="pista" className="mt-0">
-              {/* Se muestra el mismo contenido que en "todos", el filtro ya se aplicó */}
+              {isLoading ? (
+                <div className="flex justify-center items-center h-64">
+                  <Loader2 className="h-12 w-12 animate-spin text-primary" />
+                </div>
+              ) : error ? (
+                <div className="text-center p-8 bg-red-50 rounded-lg text-red-500">
+                  <p>{error}</p>
+                  <Button 
+                    onClick={() => window.location.reload()} 
+                    variant="outline" 
+                    className="mt-4"
+                  >
+                    Reintentar
+                  </Button>
+                </div>
+              ) : facilities.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {facilities.map((facility) => (
+                    <Card key={facility.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+                      <img
+                        src={facility.imagenUrl || "/placeholder.svg?height=200&width=300"}
+                        alt={facility.nombre}
+                        className="w-full h-48 object-cover"
+                      />
+                      <CardContent className="p-4">
+                        <h3 className="font-bold text-lg mb-2">{facility.nombre}</h3>
+                        <p className="text-gray-600 text-sm mb-2">{facility.descripcion}</p>
+                        <p className="text-gray-700 text-sm mb-1">
+                          <strong>Ubicación:</strong> {facility.ubicacion}
+                        </p>
+                        <p className="text-gray-700 text-sm mb-4">
+                          <strong>Precio:</strong> {formatPrice(facility.precio, facility.tipo)}
+                        </p>
+                        <Button asChild className="w-full bg-primary hover:bg-primary-light">
+                          <Link href={`/instalaciones/${facility.id}`}>Ver Disponibilidad</Link>
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center p-8 bg-gray-50 rounded-lg">
+                  <p className="text-gray-500">No se encontraron instalaciones con los criterios especificados.</p>
+                </div>
+              )}
             </TabsContent>
             <TabsContent value="otros" className="mt-0">
-              {/* Se muestra el mismo contenido que en "todos", el filtro ya se aplicó */}
+              {isLoading ? (
+                <div className="flex justify-center items-center h-64">
+                  <Loader2 className="h-12 w-12 animate-spin text-primary" />
+                </div>
+              ) : error ? (
+                <div className="text-center p-8 bg-red-50 rounded-lg text-red-500">
+                  <p>{error}</p>
+                  <Button 
+                    onClick={() => window.location.reload()} 
+                    variant="outline" 
+                    className="mt-4"
+                  >
+                    Reintentar
+                  </Button>
+                </div>
+              ) : facilities.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {facilities.map((facility) => (
+                    <Card key={facility.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+                      <img
+                        src={facility.imagenUrl || "/placeholder.svg?height=200&width=300"}
+                        alt={facility.nombre}
+                        className="w-full h-48 object-cover"
+                      />
+                      <CardContent className="p-4">
+                        <h3 className="font-bold text-lg mb-2">{facility.nombre}</h3>
+                        <p className="text-gray-600 text-sm mb-2">{facility.descripcion}</p>
+                        <p className="text-gray-700 text-sm mb-1">
+                          <strong>Ubicación:</strong> {facility.ubicacion}
+                        </p>
+                        <p className="text-gray-700 text-sm mb-4">
+                          <strong>Precio:</strong> {formatPrice(facility.precio, facility.tipo)}
+                        </p>
+                        <Button asChild className="w-full bg-primary hover:bg-primary-light">
+                          <Link href={`/instalaciones/${facility.id}`}>Ver Disponibilidad</Link>
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center p-8 bg-gray-50 rounded-lg">
+                  <p className="text-gray-500">No se encontraron instalaciones con los criterios especificados.</p>
+                </div>
+              )}
             </TabsContent>
           </Tabs>
         </div>

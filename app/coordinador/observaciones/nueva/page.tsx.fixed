@@ -1,19 +1,25 @@
-"use client";
+"use client"
 
-import type React from "react";
+import type React from "react"
 
-import { useState, useEffect } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Upload, Loader2, CheckCircle, AlertCircle, MapPin } from "lucide-react";
-import Link from "next/link";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Badge } from "@/components/ui/badge";
+import { useState, useEffect } from "react"
+import { useSearchParams, useRouter } from "next/navigation"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { ArrowLeft, Upload, Loader2, CheckCircle, AlertCircle, MapPin } from "lucide-react"
+import Link from "next/link"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { Badge } from "@/components/ui/badge"
+
+// Datos de ejemplo para las instalaciones
+const facilitiesData = [
+  { id: 1, name: "Cancha de Futbol (Grass)" },
+  { id: 2, name: "Piscina Municipal" },
+]
 
 export default function NuevaObservacion() {
   const searchParams = useSearchParams();
@@ -28,9 +34,6 @@ export default function NuevaObservacion() {
   const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [isLocationValid, setIsLocationValid] = useState(false);
   const [isCheckingLocation, setIsCheckingLocation] = useState(false);
-  
-  // Estado para almacenar las instalaciones cargadas del backend
-  const [facilitiesData, setFacilitiesData] = useState<Array<{id: number, nombre: string, tipo?: string, ubicacion?: string}>>([]);
 
   // Estado del formulario
   const [formData, setFormData] = useState({
@@ -41,39 +44,21 @@ export default function NuevaObservacion() {
 
   // Estado para errores de validación
   const [errors, setErrors] = useState<Record<string, string>>({});
+
   useEffect(() => {
-    // Cargar datos reales desde el backend
+    // Simulación de carga de datos
     const loadData = async () => {
-      try {
-        // Obtener el ID del usuario actual (podría obtenerse de un contexto de autenticación)
-        // Para pruebas, usamos el ID 4 que es un coordinador según los datos de ejemplo
-        const coordinadorId = 4; // En una implementación real, esto vendría de la sesión o un contexto de autenticación
-        
-        // Obtener las instalaciones asignadas al coordinador
-        const response = await fetch(`http://localhost:8080/api/instalaciones/coordinador/${coordinadorId}`, {
-          credentials: 'include'
-        });
-        
-        if (!response.ok) {
-          throw new Error('Error al cargar las instalaciones');
-        }
-        
-        const data = await response.json();
-        setFacilitiesData(data);
-        
-        // Si hay un ID de instalación en la URL, preseleccionarlo
-        if (facilityId) {
-          setFormData((prev) => ({
-            ...prev,
-            facilityId: facilityId,
-          }));
-        }
-      } catch (error) {
-        console.error("Error cargando las instalaciones:", error);
-        setFormError("No se pudieron cargar las instalaciones asignadas. Intenta nuevamente más tarde.");
-      } finally {
-        setIsLoading(false);
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      // Si hay un ID de instalación en la URL, preseleccionarlo
+      if (facilityId) {
+        setFormData((prev) => ({
+          ...prev,
+          facilityId: facilityId,
+        }));
       }
+      
+      setIsLoading(false);
     };
     
     loadData();
@@ -103,6 +88,65 @@ export default function NuevaObservacion() {
       // Finalizar verificación
       setIsCheckingLocation(false);
     }, 1000);
+    
+    // El código original está comentado para futuras referencias
+    /*
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const userLoc = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          };
+          setUserLocation(userLoc);
+
+          // Simulación de validación de ubicación
+          const selectedFacilityId = Number(formData.facilityId);
+          const facilityLocations = {
+            1: { lat: -12.077, lng: -77.083 },
+            2: { lat: -12.079, lng: -77.085 },
+          };
+          
+          const facilityLoc = facilityLocations[selectedFacilityId];
+          if (facilityLoc) {
+            const distance = Math.sqrt(
+              Math.pow(userLoc.lat - facilityLoc.lat, 2) + Math.pow(userLoc.lng - facilityLoc.lng, 2)
+            );
+            const isValid = distance < 0.001;
+            setIsLocationValid(isValid);
+            
+            if (!isValid) {
+              setErrors((prev) => ({
+                ...prev,
+                location: "Debes estar físicamente en la instalación para reportar una observación"
+              }));
+            } else {
+              setErrors((prev) => {
+                const newErrors = { ...prev };
+                delete newErrors.location;
+                return newErrors;
+              });
+            }
+          }
+          setIsCheckingLocation(false);
+        },
+        (error) => {
+          console.error("Error obteniendo la ubicación:", error);
+          setErrors((prev) => ({
+            ...prev,
+            location: "No se pudo obtener tu ubicación. Por favor, habilita los permisos de ubicación."
+          }));
+          setIsCheckingLocation(false);
+        }
+      );
+    } else {
+      setErrors((prev) => ({
+        ...prev,
+        location: "Tu navegador no soporta geolocalización"
+      }));
+      setIsCheckingLocation(false);
+    }
+    */
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -307,13 +351,14 @@ export default function NuevaObservacion() {
                   value={formData.facilityId}
                   onValueChange={(value) => handleSelectChange("facilityId", value)}
                   disabled={isLocationValid}
-                >                  <SelectTrigger id="facilityId" className={errors.facilityId ? "border-red-500" : ""}>
+                >
+                  <SelectTrigger id="facilityId" className={errors.facilityId ? "border-red-500" : ""}>
                     <SelectValue placeholder="Selecciona una instalación" />
                   </SelectTrigger>
                   <SelectContent>
                     {facilitiesData.map((facility) => (
                       <SelectItem key={facility.id} value={facility.id.toString()}>
-                        {facility.nombre}
+                        {facility.name}
                       </SelectItem>
                     ))}
                   </SelectContent>
